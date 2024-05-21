@@ -29,8 +29,14 @@ public class UserService extends GenericService<User>{
         user.setPerson(person);
         encodePassword(user);
 
-        if(userRepository.findByUsername(registerData.getUsername()) != null)
+        if(user.getUsername().isEmpty() || user.getPassword().isEmpty() || user.getPerson().getEmail().isEmpty()
+                || user.getPerson().getName().isEmpty()){
+            throw new BusinessException(MessageCode.DEFAULT_EMPTY_FIELD_MSG);
+        }
+
+        if(userRepository.findByUsername(registerData.getUsername()) != null) {
             throw new BusinessException(MessageCode.USER_ALREADY_EXIST);
+        }
 
         personService.create(person);
         create(user);

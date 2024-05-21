@@ -31,12 +31,12 @@ public abstract class GenericService<T extends BaseEntity> {
     @Transactional
     public T update(T updated){
         T dbElement = get(updated.getId());
-        return repository.create(dbElement);
+        return repository.save(dbElement);
     }
 
     @Transactional
     public T create(T newElement){
-        return repository.create(newElement);
+        return repository.save(newElement);
     }
 
     @Transactional

@@ -1,6 +1,7 @@
 package com.eliasfs06.spring.restapi.stock.manager.restController;
 
 import com.eliasfs06.spring.restapi.stock.manager.model.BaseEntity;
+import com.eliasfs06.spring.restapi.stock.manager.model.dto.ResponseWrapper;
 import com.eliasfs06.spring.restapi.stock.manager.service.GenericService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,8 +37,8 @@ public abstract class GenericRestController<T extends BaseEntity> {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id){
+    public ResponseEntity<ResponseWrapper<Long>> delete(@PathVariable Long id){
         service.delete(id);
-        return ResponseEntity.ok("Ok");
+        return ResponseEntity.ok(new ResponseWrapper<>("Ok", "success", id));
     }
 }

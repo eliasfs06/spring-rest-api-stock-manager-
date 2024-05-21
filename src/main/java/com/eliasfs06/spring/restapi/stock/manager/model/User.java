@@ -1,5 +1,6 @@
 package com.eliasfs06.spring.restapi.stock.manager.model;
 
+import com.eliasfs06.spring.restapi.stock.manager.model.enums.UserRole;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

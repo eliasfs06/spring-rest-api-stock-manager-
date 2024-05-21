@@ -2,19 +2,12 @@ package com.eliasfs06.spring.restapi.stock.manager.model.dto;
 
 import com.eliasfs06.spring.restapi.stock.manager.model.Person;
 import com.eliasfs06.spring.restapi.stock.manager.model.User;
-import com.eliasfs06.spring.restapi.stock.manager.model.UserRole;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import com.eliasfs06.spring.restapi.stock.manager.model.enums.UserRole;
 
 public class RegisterDTO {
-    @NotBlank(message = "{username.not.blank}")
     private String username;
-    @NotBlank(message = "{password.not.blank}")
     private String password;
-    @NotBlank(message = "{name.not.blank}")
     private String name;
-    @NotBlank(message = "{email.not.blank}")
-    @Email(message = "{email.not.valid}")
     private String email;
     private UserRole userRole;
 

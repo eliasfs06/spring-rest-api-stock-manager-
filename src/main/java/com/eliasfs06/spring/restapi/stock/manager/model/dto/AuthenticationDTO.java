@@ -4,9 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 
 public class AuthenticationDTO {
 
-    @NotBlank(message = "{username.not.blank}")
     private String username;
-    @NotBlank(message = "{password.not.blank}")
     private String password;
 
     public String getUsername() {

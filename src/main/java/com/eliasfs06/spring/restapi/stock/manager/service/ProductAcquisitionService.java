@@ -55,7 +55,7 @@ public class ProductAcquisitionService extends GenericService<ProductAcquisition
 
     public void save(ProductAcquisition productAcquisition, List<ProductAcquisitionItemDTO> productAcquisitionItens) {
         productAcquisition.setAquisitionDate(new Date());
-        productAcquisition = repository.create(productAcquisition);
+        productAcquisition = repository.save(productAcquisition);
         ProductAcquisition finalProductAcquisition = productAcquisition;
 
         List<ProductAcquisitionItem> itens = new ArrayList<>();

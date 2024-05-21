@@ -25,7 +25,7 @@ public class ProductAcquisitionItemService extends GenericService<ProductAcquisi
         Product product = productAcquisitionItem.getProduct();
         product.setStockQuantity(product.getStockQuantity() == null ? productAcquisitionItem.getQuantity() : product.getStockQuantity() + productAcquisitionItem.getQuantity());
         productService.create(product);
-        return repository.create(productAcquisitionItem);
+        return repository.save(productAcquisitionItem);
     }
 
     public void deleteItem(Long id) {
@@ -33,7 +33,7 @@ public class ProductAcquisitionItemService extends GenericService<ProductAcquisi
         Product product = productAcquisitionItem.getProduct();
         product.setStockQuantity(product.getStockQuantity() - productAcquisitionItem.getQuantity());
         productService.create(product);
-        repository.create(productAcquisitionItem);
+        repository.save(productAcquisitionItem);
     }
 
 }

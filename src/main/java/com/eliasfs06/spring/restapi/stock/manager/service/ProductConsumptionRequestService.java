@@ -24,10 +24,10 @@ public class ProductConsumptionRequestService extends GenericService<ProductCons
     @Autowired
     private ProductConsumptionRequestRepository repository;
 
-    public void requestToCosumeProduct(Product product, Integer quantity, String description) throws BusinessException {
+    public ProductConsumptionRequest requestToCosumeProduct(Product product, Integer quantity, String description) throws BusinessException {
         productConsumptionService.verifyTotalToConsume(product, quantity);
         ProductConsumptionRequest request = new ProductConsumptionRequest(product, quantity, description);
-        repository.create(request);
+        return repository.save(request);
     }
 
     public Page<ProductConsumptionRequest> getPage(Pageable pageable) {
@@ -51,13 +51,13 @@ public class ProductConsumptionRequestService extends GenericService<ProductCons
         ProductConsumptionRequest request = get(id);
         productConsumptionService.cosumeProduct(request.getProduct(), request.getQuantity());
         request.setRequestStatus(RequestStatus.ACCEPT);
-        repository.create(request);
+        repository.save(request);
 
     }
 
     public void rejectRequest(Long id) {
         ProductConsumptionRequest request = get(id);
         request.setRequestStatus(RequestStatus.REJECT);
-        repository.create(request);
+        repository.save(request);
     }
 }
