@@ -6,6 +6,8 @@ import  com.eliasfs06.spring.restapi.stock.manager.model.ProductAcquisitionItem;
 import com.eliasfs06.spring.restapi.stock.manager.model.User;
 import  com.eliasfs06.spring.restapi.stock.manager.model.dto.ProductAcquisitionItemDTO;
 import com.eliasfs06.spring.restapi.stock.manager.model.dto.ProductAcquisitionItemListDTO;
+import com.eliasfs06.spring.restapi.stock.manager.model.dto.ProductAcquisitionItemListResponseDTO;
+import com.eliasfs06.spring.restapi.stock.manager.model.dto.ProductAcquisitionItemResponseDTO;
 import  com.eliasfs06.spring.restapi.stock.manager.model.exceptionsHandler.BusinessException;
 import  com.eliasfs06.spring.restapi.stock.manager.repository.ProductAcquisitionRepository;
 import  com.eliasfs06.spring.restapi.stock.manager.service.helper.MessageCode;
@@ -33,32 +35,48 @@ public class ProductAcquisitionService extends GenericService<ProductAcquisition
     @Autowired
     private UserService userService;
 
-    public Page<ProductAcquisition> getPage(Pageable pageable) {
+    public Page<ProductAcquisitionItemListResponseDTO> getPageResponse(Pageable pageable) {
+
         int pageSize = pageable.getPageSize();
         int currentPage = pageable.getPageNumber();
         int startItem = currentPage * pageSize;
-        List<ProductAcquisition> list;
+        List<ProductAcquisitionItemListResponseDTO> list;
         List<ProductAcquisition> productAcquisitions = this.findAll();
+        List<ProductAcquisitionItemListResponseDTO> productAcquisitionResponseList = new ArrayList<>();
 
         productAcquisitions.forEach(productAcquisition -> {
             productAcquisition.setItens(productAcquisitionItemService.findByProductAcquisition(productAcquisition.getId()));
+
+            ProductAcquisitionItemListResponseDTO productAcquisitionResponse = new ProductAcquisitionItemListResponseDTO();
+
+            productAcquisition.getItens().forEach(item -> {
+                ProductAcquisitionItemResponseDTO itemDTO = new ProductAcquisitionItemResponseDTO(item.getProduct(), item.getQuantity());
+                productAcquisitionResponse.getProductAcquisitionItens().add(itemDTO);
+                productAcquisitionResponse.setUserId(item.getProductAcquisition().getAcquisitionUser().getId());
+            });
+
+            productAcquisitionResponseList.add(productAcquisitionResponse);
         });
 
-        if (productAcquisitions.size() < startItem) {
+        if (productAcquisitionResponseList.size() < startItem) {
             list = Collections.emptyList();
         } else {
-            int toIndex = Math.min(startItem + pageSize, productAcquisitions.size());
-            list = productAcquisitions.subList(startItem, toIndex);
+            int toIndex = Math.min(startItem + pageSize, productAcquisitionResponseList.size());
+            list = productAcquisitionResponseList.subList(startItem, toIndex);
         }
 
-        return new PageImpl<ProductAcquisition>(list, PageRequest.of(currentPage, pageSize), productAcquisitions.size());
+        return new PageImpl<ProductAcquisitionItemListResponseDTO>(list, PageRequest.of(currentPage, pageSize), productAcquisitionResponseList.size());
     }
 
     public List<ProductAcquisition> findAll(){
         return repository.findAll();
     }
 
-    public ProductAcquisition save(ProductAcquisitionItemListDTO productAcquisitionList) {
+    public ProductAcquisitionItemListDTO save(ProductAcquisitionItemListDTO productAcquisitionList) throws BusinessException {
+        if(productAcquisitionList.getProductAcquisitionItens().isEmpty()){
+            throw new BusinessException(MessageCode.DEFAULT_EMPTY_FIELD_MSG);
+        }
+
         ProductAcquisition productAcquisition = new ProductAcquisition();
         productAcquisition.setAquisitionDate(new Date());
 
@@ -77,7 +95,7 @@ public class ProductAcquisitionService extends GenericService<ProductAcquisition
 
         productAcquisition.setItens(itens);
 
-        return productAcquisition;
+        return productAcquisitionList;
     }
 
     public void deleteAcquisition(Long id) throws BusinessException {

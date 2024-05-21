@@ -3,10 +3,7 @@ package com.eliasfs06.spring.restapi.stock.manager.restController;
 import com.eliasfs06.spring.restapi.stock.manager.model.Product;
 import com.eliasfs06.spring.restapi.stock.manager.model.ProductAcquisition;
 import com.eliasfs06.spring.restapi.stock.manager.model.ProductAcquisitionItem;
-import com.eliasfs06.spring.restapi.stock.manager.model.dto.PageResponse;
-import com.eliasfs06.spring.restapi.stock.manager.model.dto.ProductAcquisitionItemDTO;
-import com.eliasfs06.spring.restapi.stock.manager.model.dto.ProductAcquisitionItemListDTO;
-import com.eliasfs06.spring.restapi.stock.manager.model.dto.ResponseWrapper;
+import com.eliasfs06.spring.restapi.stock.manager.model.dto.*;
 import com.eliasfs06.spring.restapi.stock.manager.model.exceptionsHandler.BusinessException;
 import com.eliasfs06.spring.restapi.stock.manager.service.ProductAcquisitionService;
 import com.eliasfs06.spring.restapi.stock.manager.service.ProductService;
@@ -59,7 +56,7 @@ public class ProductAcquisitionRestController extends GenericRestController<Prod
         int currentPage = page.orElse(DEFAULT_PAGE_NUMBER);
         int pageSize = size.orElse(DEFAULT_PAGE_SIZE);
 
-        Page<ProductAcquisition> productAcquisitionPage = service.getPage(PageRequest.of(currentPage - 1, pageSize));
+        Page<ProductAcquisitionItemListResponseDTO> productAcquisitionPage = service.getPageResponse(PageRequest.of(currentPage - 1, pageSize));
 
         if (productAcquisitionPage.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -75,7 +72,14 @@ public class ProductAcquisitionRestController extends GenericRestController<Prod
 
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody ProductAcquisitionItemListDTO productAcquisitionItemListDTO) {
-        ProductAcquisition productAcquisitionSaved = service.save(productAcquisitionItemListDTO);
-        return new ResponseEntity<>(new ResponseWrapper<>(messageHelper.getMessage(MessageCode.DEFAULT_SUCCESS_MSG), "success", productAcquisitionSaved), HttpStatus.CREATED);
-    }
+        try {
+            ProductAcquisitionItemListDTO productAcquisitionSaved = service.save(productAcquisitionItemListDTO);
+            return new ResponseEntity<>(new ResponseWrapper<>(messageHelper.getMessage(MessageCode.DEFAULT_SUCCESS_MSG), "success", productAcquisitionSaved), HttpStatus.CREATED);
+
+        } catch (BusinessException e){
+            String errorMessage = messageHelper.getMessage(e.getMessage());
+            return new ResponseEntity<>(new ResponseWrapper<>(errorMessage, "error", null), HttpStatus.BAD_REQUEST);
+
+        }
+ }
 }

@@ -47,17 +47,17 @@ public class ProductConsumptionRequestService extends GenericService<ProductCons
         return new PageImpl<ProductConsumptionRequest>(list, PageRequest.of(currentPage, pageSize), requests.size());
     }
 
-    public void acceptRequest(Long id) throws BusinessException {
+    public ProductConsumptionRequest acceptRequest(Long id) throws BusinessException {
         ProductConsumptionRequest request = get(id);
         productConsumptionService.cosumeProduct(request.getProduct(), request.getQuantity());
         request.setRequestStatus(RequestStatus.ACCEPT);
-        repository.save(request);
+        return repository.save(request);
 
     }
 
-    public void rejectRequest(Long id) {
+    public ProductConsumptionRequest rejectRequest(Long id) {
         ProductConsumptionRequest request = get(id);
         request.setRequestStatus(RequestStatus.REJECT);
-        repository.save(request);
+        return repository.save(request);
     }
 }
