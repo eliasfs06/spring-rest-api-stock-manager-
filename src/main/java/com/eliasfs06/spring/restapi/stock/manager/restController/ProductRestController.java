@@ -85,7 +85,7 @@ public class ProductRestController extends GenericRestController<Product> {
 
     @PostMapping("/request-to-consume/{id}")
     public ResponseEntity<ResponseWrapper<ProductConsumptionRequest>> requestToConsume(@PathVariable Long id,
-                                                   @RequestParam Integer quantity, String description) {
+                                                   @RequestParam Integer quantity, @RequestBody String description) {
         try {
             ProductConsumptionRequest productConsumptionReq = productConsumptionRequestService.requestToCosumeProduct(productService.get(id), quantity, description);
             return new ResponseEntity<>(new ResponseWrapper<>(messageHelper.getMessage(MessageCode.PRODUCT_CONSUMPTION_REQUESTED_SUCCESSFULLY), "success", productConsumptionReq), HttpStatus.ACCEPTED);
