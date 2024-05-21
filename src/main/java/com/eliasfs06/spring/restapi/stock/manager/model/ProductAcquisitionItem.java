@@ -1,5 +1,6 @@
 package com.eliasfs06.spring.restapi.stock.manager.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,6 +14,7 @@ public class ProductAcquisitionItem extends BaseEntity{
 
     private Integer quantity;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "productAcquisition_id")
     private ProductAcquisition productAcquisition;

@@ -34,7 +34,7 @@ public class AuthenticationRestController {
         try {
             Authentication auth = authenticationService.authenticateUser(data);
             String token = authenticationService.getToken(auth);
-            return new ResponseEntity<>(new ResponseWrapper<>(MessageCode.DEFAULT_SUCCESS_MSG, "success",token), HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(new ResponseWrapper<>(messageHelper.getMessage(MessageCode.DEFAULT_SUCCESS_MSG), "success",token), HttpStatus.ACCEPTED);
 
         } catch (BusinessException e) {
             String errorMessage = messageHelper.getMessage(e.getMessage());

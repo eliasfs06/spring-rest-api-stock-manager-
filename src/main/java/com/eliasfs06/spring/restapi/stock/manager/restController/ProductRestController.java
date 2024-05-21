@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("api/products")
-public class ProductController extends GenericRestController<Product> {
+public class ProductRestController extends GenericRestController<Product> {
 
     @Autowired
     private ProductService productService;
@@ -54,7 +54,7 @@ public class ProductController extends GenericRestController<Product> {
         try {
             productService.validateProduct(product);
             Product productSaved = productService.create(product);
-            return new ResponseEntity<>(new ResponseWrapper<>(MessageCode.DEFAULT_SUCCESS_MSG, "success", productSaved), HttpStatus.CREATED);
+            return new ResponseEntity<>(new ResponseWrapper<>(messageHelper.getMessage(MessageCode.DEFAULT_SUCCESS_MSG), "success", productSaved), HttpStatus.CREATED);
         } catch (BusinessException e) {
             String errorMessage = messageHelper.getMessage(MessageCode.DEFAULT_EMPTY_FIELD_MSG);
             return new ResponseEntity<>(new ResponseWrapper<>(errorMessage, "error",null), HttpStatus.BAD_REQUEST);
@@ -65,7 +65,7 @@ public class ProductController extends GenericRestController<Product> {
     public ResponseEntity<ResponseWrapper<Long>> delete(@PathVariable Long id) {
         try {
             productService.delete(id);
-            return new ResponseEntity<>(new ResponseWrapper<>(MessageCode.DEFAULT_SUCCESS_MSG, "success", id), HttpStatus.CREATED);
+            return new ResponseEntity<>(new ResponseWrapper<>(messageHelper.getMessage(MessageCode.DEFAULT_SUCCESS_MSG), "success", id), HttpStatus.CREATED);
         } catch (Exception e) {
             String errorMessage = messageHelper.getMessage(MessageCode.DEFAULT_ERROR_MSG);
             return new ResponseEntity<>(new ResponseWrapper<>(errorMessage, "error",null), HttpStatus.BAD_REQUEST);
@@ -76,7 +76,7 @@ public class ProductController extends GenericRestController<Product> {
     public ResponseEntity<ResponseWrapper<ProductConsumption>> consume(@PathVariable Long id, @RequestParam Integer quantity) {
         try {
             ProductConsumption productConsumption = productConsumptionService.cosumeProduct(productService.get(id), quantity);
-            return new ResponseEntity<>(new ResponseWrapper<>(MessageCode.PRODUCT_SUCCESSFULLY_CONSUMED, "success", productConsumption), HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(new ResponseWrapper<>(messageHelper.getMessage(MessageCode.PRODUCT_SUCCESSFULLY_CONSUMED), "success", productConsumption), HttpStatus.ACCEPTED);
 
         } catch (BusinessException e) {
             String errorMessage = messageHelper.getMessage(MessageCode.CANT_CONSUME_PRODUCT);
@@ -88,7 +88,7 @@ public class ProductController extends GenericRestController<Product> {
                                                    @RequestParam Integer quantity, String description) {
         try {
             ProductConsumptionRequest productConsumptionReq = productConsumptionRequestService.requestToCosumeProduct(productService.get(id), quantity, description);
-            return new ResponseEntity<>(new ResponseWrapper<>(MessageCode.PRODUCT_CONSUMPTION_REQUESTED_SUCCESSFULLY, "success", productConsumptionReq), HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(new ResponseWrapper<>(messageHelper.getMessage(MessageCode.PRODUCT_CONSUMPTION_REQUESTED_SUCCESSFULLY), "success", productConsumptionReq), HttpStatus.ACCEPTED);
 
         } catch (BusinessException e) {
             String errorMessage = messageHelper.getMessage(MessageCode.CANT_CONSUME_PRODUCT);

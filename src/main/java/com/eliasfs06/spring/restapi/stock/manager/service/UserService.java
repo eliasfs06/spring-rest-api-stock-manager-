@@ -46,4 +46,7 @@ public class UserService extends GenericService<User>{
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
     }
 
+    public User findById(Long userId) {
+        return userRepository.findById(userId).orElse(null);
+    }
 }

@@ -3,7 +3,9 @@ package com.eliasfs06.spring.restapi.stock.manager.service;
 import  com.eliasfs06.spring.restapi.stock.manager.model.Product;
 import  com.eliasfs06.spring.restapi.stock.manager.model.ProductAcquisition;
 import  com.eliasfs06.spring.restapi.stock.manager.model.ProductAcquisitionItem;
+import com.eliasfs06.spring.restapi.stock.manager.model.User;
 import  com.eliasfs06.spring.restapi.stock.manager.model.dto.ProductAcquisitionItemDTO;
+import com.eliasfs06.spring.restapi.stock.manager.model.dto.ProductAcquisitionItemListDTO;
 import  com.eliasfs06.spring.restapi.stock.manager.model.exceptionsHandler.BusinessException;
 import  com.eliasfs06.spring.restapi.stock.manager.repository.ProductAcquisitionRepository;
 import  com.eliasfs06.spring.restapi.stock.manager.service.helper.MessageCode;
@@ -27,6 +29,9 @@ public class ProductAcquisitionService extends GenericService<ProductAcquisition
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private UserService userService;
 
     public Page<ProductAcquisition> getPage(Pageable pageable) {
         int pageSize = pageable.getPageSize();
@@ -53,19 +58,28 @@ public class ProductAcquisitionService extends GenericService<ProductAcquisition
         return repository.findAll();
     }
 
-    public void save(ProductAcquisition productAcquisition, List<ProductAcquisitionItemDTO> productAcquisitionItens) {
+    public ProductAcquisition save(ProductAcquisitionItemListDTO productAcquisitionList) {
+        ProductAcquisition productAcquisition = new ProductAcquisition();
         productAcquisition.setAquisitionDate(new Date());
-        productAcquisition = repository.save(productAcquisition);
-        ProductAcquisition finalProductAcquisition = productAcquisition;
+
+        User user = userService.findById(productAcquisitionList.getUserId());
+        productAcquisition.setAcquisitionUser(user);
+
+        repository.save(productAcquisition);
 
         List<ProductAcquisitionItem> itens = new ArrayList<>();
-        productAcquisitionItens.forEach(item -> {
+        productAcquisitionList.getProductAcquisitionItens().forEach(item -> {
             Product product = productService.get(Long.valueOf(item.getProductId()));
-            ProductAcquisitionItem newItem = new ProductAcquisitionItem(product, Integer.valueOf(item.getQuantity()), finalProductAcquisition);
+            ProductAcquisitionItem newItem = new ProductAcquisitionItem(product, item.getQuantity(), productAcquisition);
             productAcquisitionItemService.create(newItem);
             itens.add(newItem);
         });
+
+        productAcquisition.setItens(itens);
+
+        return productAcquisition;
     }
+
     public void deleteAcquisition(Long id) throws BusinessException {
         ProductAcquisition productAcquisition = get(id);
 

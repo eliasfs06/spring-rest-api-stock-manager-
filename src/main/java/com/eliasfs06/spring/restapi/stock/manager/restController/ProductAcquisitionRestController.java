@@ -5,6 +5,7 @@ import com.eliasfs06.spring.restapi.stock.manager.model.ProductAcquisition;
 import com.eliasfs06.spring.restapi.stock.manager.model.ProductAcquisitionItem;
 import com.eliasfs06.spring.restapi.stock.manager.model.dto.PageResponse;
 import com.eliasfs06.spring.restapi.stock.manager.model.dto.ProductAcquisitionItemDTO;
+import com.eliasfs06.spring.restapi.stock.manager.model.dto.ProductAcquisitionItemListDTO;
 import com.eliasfs06.spring.restapi.stock.manager.model.dto.ResponseWrapper;
 import com.eliasfs06.spring.restapi.stock.manager.model.exceptionsHandler.BusinessException;
 import com.eliasfs06.spring.restapi.stock.manager.service.ProductAcquisitionService;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @RestController
-@RequestMapping("product-acquisition")
+@RequestMapping("api/product-acquisition")
 public class ProductAcquisitionRestController extends GenericRestController<ProductAcquisition> {
 
     @Autowired
@@ -73,23 +74,8 @@ public class ProductAcquisitionRestController extends GenericRestController<Prod
     }
 
     @PostMapping("/save")
-    public ResponseEntity<String> save(@RequestBody ProductAcquisition productAcquisition,
-                                       @RequestBody List<ProductAcquisitionItemDTO> productAcquisitionItens) {
-        service.save(productAcquisition, productAcquisitionItens);
-        return ResponseEntity.ok(messageHelper.getMessage(MessageCode.DEFAULT_SUCCESS_MSG));
-    }
-
-    @PostMapping("/add-item")
-    public ResponseEntity<List<ProductAcquisitionItem>> addProduct(@RequestBody List<ProductAcquisitionItemDTO> productAcquisitionItens) {
-
-        List<ProductAcquisitionItem> itens = new ArrayList<>();
-        if (productAcquisitionItens != null && !productAcquisitionItens.isEmpty()) {
-            productAcquisitionItens.forEach(item -> {
-                Product product = productService.get(Long.valueOf(item.getProductId()));
-                ProductAcquisitionItem newItem = new ProductAcquisitionItem(product, Integer.valueOf(item.getQuantity()));
-                itens.add(newItem);
-            });
-        }
-        return ResponseEntity.ok(itens);
+    public ResponseEntity<?> save(@RequestBody ProductAcquisitionItemListDTO productAcquisitionItemListDTO) {
+        ProductAcquisition productAcquisitionSaved = service.save(productAcquisitionItemListDTO);
+        return new ResponseEntity<>(new ResponseWrapper<>(messageHelper.getMessage(MessageCode.DEFAULT_SUCCESS_MSG), "success", productAcquisitionSaved), HttpStatus.CREATED);
     }
 }
